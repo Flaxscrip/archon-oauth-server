@@ -62,13 +62,16 @@ app.use(session({
 }));
 
 // CORS configuration
+// Note: credentials:true requires specific origin, not '*'
+const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:5501';
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: corsOrigin.includes(',') ? corsOrigin.split(',').map(s => s.trim()) : corsOrigin,
     methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true,
     optionsSuccessStatus: 200
 };
 
+console.log('CORS origin:', corsOptions.origin);
 app.use(cors(corsOptions));
 
 // ============================================================================
