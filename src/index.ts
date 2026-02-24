@@ -16,14 +16,14 @@ import morgan from 'morgan';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-// @ts-ignore - MDIP/Archon packages
-import CipherNode from '@mdip/cipher/node';
+// @ts-ignore - Archon packages
+import CipherNode from '@didcid/cipher/node';
 // @ts-ignore
-import GatekeeperClient from '@mdip/gatekeeper/client';
+import GatekeeperClient from '@didcid/gatekeeper/client';
 // @ts-ignore
-import Keymaster from '@mdip/keymaster';
+import Keymaster from '@didcid/keymaster';
 // @ts-ignore
-import WalletJson from '@mdip/keymaster/wallet/json';
+import WalletJson from '@didcid/keymaster/wallet/json';
 
 import { createOAuthRoutes, registerClient, OAuthClient } from './oauth.js';
 
