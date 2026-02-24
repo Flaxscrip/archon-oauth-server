@@ -106,23 +106,32 @@ async function initKeymaster(): Promise<void> {
         passphrase,  // Use the validated string
     });
 
-    // Check/create identity
+    // Initialize wallet and identity
     try {
         const ids = await keymaster.listIds();
         console.log('Wallet IDs:', ids);
         
         if (ids.length === 0) {
             console.log('No identities found, creating oauth-server...');
-            await keymaster.createId('oauth-server');
-            console.log('Created default identity: oauth-server');
+            // Specify registry for the new ID (hyperswarm is fast/free for dev)
+            const registry = process.env.REGISTRY || 'hyperswarm';
+            const newId = await keymaster.createId('oauth-server', { registry });
+            console.log('Created identity:', newId);
         } else {
-            // Use the first available ID
+            // Use existing identity
             const currentId = await keymaster.getCurrentId();
-            console.log('Using identity:', currentId || ids[0]);
+            if (!currentId && ids.length > 0) {
+                await keymaster.setCurrentId(ids[0]);
+                console.log('Set current identity to:', ids[0]);
+            } else {
+                console.log('Using identity:', currentId);
+            }
         }
     } catch (idError: any) {
-        console.warn('Identity setup warning:', idError.message);
-        console.warn('Continuing without server identity (challenge/verify will still work)');
+        console.error('Identity setup failed:', idError.message);
+        console.error('The server needs an identity to create challenges.');
+        console.error('Make sure the gatekeeper is running and accessible.');
+        process.exit(1);
     }
 
     console.log(`Connected to gatekeeper at ${GATEKEEPER_URL}`);
