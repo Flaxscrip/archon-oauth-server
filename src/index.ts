@@ -106,11 +106,23 @@ async function initKeymaster(): Promise<void> {
         passphrase,  // Use the validated string
     });
 
-    // Create default identity if needed
-    const ids = await keymaster.listIds();
-    if (ids.length === 0) {
-        await keymaster.createId('oauth-server');
-        console.log('Created default identity: oauth-server');
+    // Check/create identity
+    try {
+        const ids = await keymaster.listIds();
+        console.log('Wallet IDs:', ids);
+        
+        if (ids.length === 0) {
+            console.log('No identities found, creating oauth-server...');
+            await keymaster.createId('oauth-server');
+            console.log('Created default identity: oauth-server');
+        } else {
+            // Use the first available ID
+            const currentId = await keymaster.getCurrentId();
+            console.log('Using identity:', currentId || ids[0]);
+        }
+    } catch (idError: any) {
+        console.warn('Identity setup warning:', idError.message);
+        console.warn('Continuing without server identity (challenge/verify will still work)');
     }
 
     console.log(`Connected to gatekeeper at ${GATEKEEPER_URL}`);
