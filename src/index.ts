@@ -97,7 +97,7 @@ async function initKeymaster(): Promise<void> {
     keymaster = new Keymaster({
         gatekeeper,
         wallet,
-        cipher,
+        cipher: cipher as any,  // Type mismatch between npm/local versions
         passphrase: WALLET_PASSPHRASE,
     });
 
