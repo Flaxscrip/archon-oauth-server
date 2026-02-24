@@ -21,9 +21,9 @@
   "author": "Archetech",
   "license": "MIT",
   "dependencies": {
-    "@didcid/cipher": "^0.2.1",
-    "@didcid/gatekeeper": "^0.2.1",
-    "@didcid/keymaster": "^0.2.1",
+    "@mdip/cipher": "^1.4.0-beta.0",
+    "@mdip/gatekeeper": "^1.4.0-beta.0",
+    "@mdip/keymaster": "^1.4.0-beta.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
