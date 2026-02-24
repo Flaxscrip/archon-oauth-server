@@ -78,10 +78,15 @@ app.use(cors(corsOptions));
 let keymaster: any;
 
 async function initKeymaster(): Promise<void> {
-    if (!WALLET_PASSPHRASE) {
-        console.error('Error: WALLET_PASSPHRASE environment variable not set');
+    if (!WALLET_PASSPHRASE || typeof WALLET_PASSPHRASE !== 'string') {
+        console.error('Error: WALLET_PASSPHRASE environment variable not set or invalid');
+        console.error('Got:', typeof WALLET_PASSPHRASE, WALLET_PASSPHRASE);
         process.exit(1);
     }
+    
+    // Ensure passphrase is a clean string
+    const passphrase = String(WALLET_PASSPHRASE).trim();
+    console.log('Using passphrase length:', passphrase.length);
 
     const gatekeeper = new GatekeeperClient();
     await gatekeeper.connect({
@@ -98,7 +103,7 @@ async function initKeymaster(): Promise<void> {
         gatekeeper,
         wallet,
         cipher: cipher as any,  // Type mismatch between npm/local versions
-        passphrase: WALLET_PASSPHRASE,
+        passphrase,  // Use the validated string
     });
 
     // Create default identity if needed
