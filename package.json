@@ -1,0 +1,42 @@
+{
+  "name": "archon-oauth-server",
+  "version": "0.1.0",
+  "description": "OAuth 2.0 Authorization Server using Archon DID authentication",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts"
+  },
+  "keywords": [
+    "oauth",
+    "oauth2",
+    "archon",
+    "did",
+    "decentralized-identity",
+    "authentication",
+    "ssi"
+  ],
+  "author": "Archetech",
+  "license": "MIT",
+  "dependencies": {
+    "@didcid/cipher": "^0.3.0",
+    "@didcid/gatekeeper": "^0.3.0",
+    "@didcid/keymaster": "^0.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/express-session": "^1.18.1",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.13.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
