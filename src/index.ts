@@ -153,6 +153,99 @@ app.get('/health', (req, res) => {
     });
 });
 
+// ============================================================================
+// Session-based API (for demo client compatibility)
+// ============================================================================
+
+// Check authentication status
+app.get('/api/check-auth', (req, res) => {
+    const session = req.session as any;
+    const isAuthenticated = !!session?.user;
+    
+    res.json({
+        isAuthenticated,
+        userDID: session?.user?.did || null,
+        profile: session?.user?.profile || null
+    });
+});
+
+// Create challenge for login
+app.get('/api/challenge', async (req, res) => {
+    try {
+        const challenge = await keymaster.createChallenge({
+            callback: `${HOST_URL}/api/login`
+        });
+        
+        (req.session as any).challenge = challenge;
+        const challengeURL = `${WALLET_URL}?challenge=${challenge}`;
+        
+        res.json({ challenge, challengeURL });
+    } catch (error: any) {
+        console.error('Challenge error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Login with response (POST)
+app.post('/api/login', async (req, res) => {
+    try {
+        const { response } = req.body;
+        
+        if (!response) {
+            return res.status(400).json({ error: 'Missing response' });
+        }
+        
+        const verify = await keymaster.verifyResponse(response, { retries: 10 });
+        
+        if (verify.match) {
+            (req.session as any).user = {
+                did: verify.responder,
+                response_did: response
+            };
+            res.json({ authenticated: true, did: verify.responder });
+        } else {
+            res.json({ authenticated: false });
+        }
+    } catch (error: any) {
+        console.error('Login error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Login with response (GET - for wallet callback)
+app.get('/api/login', async (req, res) => {
+    try {
+        const { response } = req.query;
+        
+        if (!response || typeof response !== 'string') {
+            return res.status(400).json({ error: 'Missing response' });
+        }
+        
+        const verify = await keymaster.verifyResponse(response, { retries: 10 });
+        
+        if (verify.match) {
+            (req.session as any).user = {
+                did: verify.responder,
+                response_did: response
+            };
+            res.json({ authenticated: true, did: verify.responder });
+        } else {
+            res.json({ authenticated: false });
+        }
+    } catch (error: any) {
+        console.error('Login error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Logout
+app.post('/api/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) console.error('Logout error:', err);
+        res.json({ ok: true });
+    });
+});
+
 // Info endpoint
 app.get('/', (req, res) => {
     res.json({
